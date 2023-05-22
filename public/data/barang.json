@@ -1,0 +1,295 @@
+
+{
+    "barang": [
+      {
+        "id": 1,
+        "name": "Kaos UT Growth",
+        "sizes": [
+          {
+            "size": "XXL",
+            "stock": 121
+          },
+          {
+            "size": "XL",
+            "stock": 93
+          },
+          {
+            "size": "L",
+            "stock": 6
+          },
+          {
+            "size": "M",
+            "stock": 35
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Kaos UTrees",
+        "sizes": [
+          {
+            "size": "XL",
+            "stock": 101
+          },
+          {
+            "size": "4L",
+            "stock": 10
+          },
+          {
+            "size": "2L",
+            "stock": 5
+          },
+          {
+            "size": "L",
+            "stock": 113
+          },
+          {
+            "size": "M",
+            "stock": 87
+          },
+          {
+            "size": "XXL",
+            "stock": 22
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Topi 50 th Hitam",
+        "sizes": [
+          {
+            "size": "ALL SIZE",
+            "stock": 147
+          }          
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Topi 50 th putih",
+        "sizes": [
+          {
+            "size": "ALL SIZE",
+            "stock": 308
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "name": "Topi Khaki",
+        "sizes": [
+          {
+            "size": "ALL SIZE",
+            "stock": 105
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "name": "Topi Bucket Museum Virtual",
+        "sizes": [
+          {
+            "size": "ALL SIZE",
+            "stock": 100
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "name": "Kaos Kebencanaan",
+        "sizes": [
+          {
+            "size": "L",
+            "stock": 31
+          },
+          {
+            "size": "XXXL",
+            "stock": 19
+          },
+          {
+            "size": "S",
+            "stock": 10
+          },
+          {
+            "size": "XL",
+            "stock": 23
+          },
+          {
+            "size": "M",
+            "stock": 15
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "name": "Rompi Moving As One",
+        "sizes": [
+          {
+            "size": "S",
+            "stock": 2
+          },
+          {
+            "size": "L",
+            "stock": 12
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "name": "Rompi Sobat Expert",
+        "sizes": [
+          {
+            "size": "XXXL",
+            "stock": 4
+          },
+          {
+            "size": "XXL",
+            "stock": 10
+          },
+          {
+            "size": "XL",
+            "stock": 9
+          },
+          {
+            "size": "L",
+            "stock": 2
+          },
+          {
+            "size": "M",
+            "stock": 9
+          },
+          {
+            "size": "S",
+            "stock": 10
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "name": "Jaket UT Youth Movement",
+        "sizes": [
+          {
+            "size": "XXL",
+            "stock": 8
+          },
+          {
+            "size": "XL",
+            "stock": 12
+          },
+          {
+            "size": "L",
+            "stock": 11
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "name": "Baju Nitijasati Alami",
+        "sizes": [
+          {
+            "size": "ALL SIZE",
+            "stock": 91
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "name": "Baju Nitijasati Alami",
+        "sizes": [
+          {
+            "size": "ALL SIZE",
+            "stock": 91
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "name": "Baju Mekanik",
+        "sizes": [
+          {
+            "size": "XXXXL",
+            "stock": 5
+          },
+          {
+            "size": "XXL",
+            "stock": 5
+          },
+          {
+            "size": "XL",
+            "stock": 7
+          },
+          {
+            "size": "L",
+            "stock": 18
+          },
+          {
+            "size": "M",
+            "stock": 6
+          },
+          {
+            "size": "S",
+            "stock": 7
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "name": "Payung Kuning",
+        "sizes": [
+          {
+            "size": "ALL SIZE",
+            "stock": 297
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "name": "Jaket UT",
+        "sizes": [
+          {
+            "size": "XXL",
+            "stock": 15
+          },
+          {
+            "size": "L",
+            "stock": 15
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "name": "Baju Museum Virtual Hitam",
+        "sizes": [
+          {
+            "size": "XXL",
+            "stock": 20
+          },
+          {
+            "size": "XL",
+            "stock": 65
+          },
+          {
+            "size": "3L",
+            "stock": 20
+          },
+          {
+            "size": "2L",
+            "stock": 25
+          },
+          {
+            "size": "L",
+            "stock": 145
+          },
+          {
+            "size": "M",
+            "stock": 44
+          },
+          {
+            "size": "S",
+            "stock": 45
+          }
+        ]
+      }      
+      
+    ]
+  }
+  

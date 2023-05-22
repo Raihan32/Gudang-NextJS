@@ -1,0 +1,36 @@
+
+{
+    "user": [
+      {
+        "nrp": 423412123,
+        "name": "Arkhan Doohan",
+        "password": "123456"
+      },
+      {
+        "nrp": 292034092,
+        "name": "Yeri",
+        "password": "123456" 
+      },
+      {
+        "nrp": 930358489,
+        "name": "Ali",
+        "password": "123456"
+      },
+      {
+        "nrp": 3812703612,
+        "name": "Raihan",
+        "password": "123456"
+      },
+      {
+        "nrp": 7312639812,
+        "name": "Nuha" ,
+        "password": "123456"
+      },
+      {
+        "nrp": 14238420,
+        "name": "Emla",
+        "password": "123456"
+      }
+      
+    ]
+  }
