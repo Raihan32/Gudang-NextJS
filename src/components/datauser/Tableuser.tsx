@@ -30,6 +30,13 @@ const Tabletuser: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const simpanDataPengguna = (updatedUserList: User[]) => {
+    const newData = { ...data, user: updatedUserList };
+    const newDataJson = JSON.stringify(newData);
+    // Simpan data pengguna ke file JSON menggunakan metode yang sesuai di sini (seperti fetch API atau metode penyimpanan file pada server)
+    console.log(newDataJson);
+  };
+
   const handleTambahDataUser = () => {
     if (newUser.nrp && newUser.name && newUser.password) {
       const existingUser = userList.find((user) => user.nrp === newUser.nrp);
@@ -39,9 +46,11 @@ const Tabletuser: React.FC = () => {
           user.nrp === existingUser.nrp ? newUser : user
         );
         setUserList(updatedUserList);
+        simpanDataPengguna(updatedUserList); // Simpan data pengguna ke file JSON
       } else {
         const updatedUserList = [...userList, newUser];
         setUserList(updatedUserList);
+        simpanDataPengguna(updatedUserList); // Simpan data pengguna ke file JSON
       }
 
       setNewUser({ nrp: "", name: "", password: "" });
@@ -70,6 +79,7 @@ const Tabletuser: React.FC = () => {
   const handleDeleteUser = (nrp: string) => {
     const updatedUserList = userList.filter((user) => user.nrp !== nrp);
     setUserList(updatedUserList);
+    simpanDataPengguna(updatedUserList); // Simpan data pengguna ke file JSON
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +103,7 @@ const Tabletuser: React.FC = () => {
             label="Cari Nama User"
             value={searchTerm}
             onChange={handleSearch}
-            sx={{ flex: 1, mr: 2,  marginTop: 2 }}
+            sx={{ flex: 1, mr: 2, marginTop: 2 }}
           />
         </Box>
         <Box sx={{ marginBottom: 2 }}>
