@@ -17,9 +17,7 @@ import ddIcon6 from 'src/assets/images/svgs/icon-dd-lifebuoy.svg'
 import ddIcon7 from 'src/assets/images/svgs/icon-dd-message-box.svg'
 import ddIcon8 from 'src/assets/images/svgs/icon-dd-application.svg'
 
-//
-// Notifications dropdown
-//
+
 const notifications = [
   {
     avatar: img1,
