@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, FormControl, Select, MenuItem, InputLabel, Box } from '@mui/material';
+import axios from 'axios';
 
 interface TransaksiFormProps {
   addDataBarang: (dataTransaksi: DataTransaksi) => void;
@@ -20,7 +21,7 @@ const TransaksiForm: React.FC<TransaksiFormProps> = ({ addDataBarang }) => {
   const [namaBarang, setNamaBarang] = useState('');
   const [jenisTransaksi, setJenisTransaksi] = useState('');
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Membuat objek data transaksi
@@ -32,15 +33,23 @@ const TransaksiForm: React.FC<TransaksiFormProps> = ({ addDataBarang }) => {
       jenisTransaksi,
     };
 
-    // Memanggil fungsi addDataBarang untuk menambahkan data transaksi ke tabel barang
-    addDataBarang(dataTransaksi);
+    try {
+      // Mengirim data transaksi ke API menggunakan Axios
+      const response = await axios.post('/api/transaksi', dataTransaksi);
+      console.log('Transaction submitted successfully!', response.data);
 
-    // Mereset form setelah submit
-    setTanggal('');
-    setJumlah('');
-    setUkuran('');
-    setNamaBarang('');
-    setJenisTransaksi('');
+      // Memanggil fungsi addDataBarang untuk menambahkan data transaksi ke tabel barang
+      addDataBarang(dataTransaksi);
+
+      // Mereset form setelah submit
+      setTanggal('');
+      setJumlah('');
+      setUkuran('');
+      setNamaBarang('');
+      setJenisTransaksi('');
+    } catch (error) {
+      console.error('Failed to submit transaction!', error);
+    }
   };
 
   return (

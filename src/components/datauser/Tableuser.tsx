@@ -18,6 +18,7 @@ interface User {
   nrp: string;
   name: string;
   password: string;
+  role: string;
 }
 
 const Tabletuser: React.FC = () => {
@@ -26,6 +27,7 @@ const Tabletuser: React.FC = () => {
     nrp: "",
     name: "",
     password: "",
+    role: "",
   });
   const [openModal, setOpenModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,7 +55,7 @@ const Tabletuser: React.FC = () => {
         simpanDataPengguna(updatedUserList); // Simpan data pengguna ke file JSON
       }
 
-      setNewUser({ nrp: "", name: "", password: "" });
+      setNewUser({ nrp: "", name: "", password: "", role: "",});
       setOpenModal(false);
     } else {
       alert("Harap isi NRP, Nama, dan Password.");
@@ -141,6 +143,11 @@ const Tabletuser: React.FC = () => {
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
+                  Role
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="subtitle2" fontWeight={600}>
                   Aksi
                 </Typography>
               </TableCell>
@@ -186,6 +193,20 @@ const Tabletuser: React.FC = () => {
                   >
                     {renderPassword(user.password)}
                   </Typography>
+                </TableCell>
+                <TableCell>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight={600}>
+                        {user.role}
+                      </Typography>
+                    </Box>
+                  </Box>
                 </TableCell>
                 <TableCell>
                   <IconButton
@@ -249,6 +270,15 @@ const Tabletuser: React.FC = () => {
                   label="Password"
                   name="password"
                   value={newUser.password}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Box>
+              <Box sx={{ marginBottom: 2 }}>
+                <TextField
+                  label="Role"
+                  name="role"
+                  value={newUser.role}
                   onChange={handleInputChange}
                   fullWidth
                 />

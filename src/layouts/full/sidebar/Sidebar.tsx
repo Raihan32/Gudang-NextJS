@@ -48,7 +48,7 @@ const Sidebar = ({isMobileSidebarOpen, onSidebarClose, isSidebarOpen }: ItemType
             {/* ------------------------------------------- */}
             {/* Logo */}
             {/* ------------------------------------------- */}
-            <Box px={3}>
+            <Box px={4} py={2}>
               <Logo />
             </Box>
             <Box>

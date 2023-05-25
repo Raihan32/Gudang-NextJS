@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,36 +13,25 @@ import {
 } from '@mui/material';
 import DashboardCard from '../shared/DashboardCard';
 
-const Tabletransaksi = () => {
-  const transaksi = [
-    {
-      id: 1,
-      tanggal: '2023-05-01',
-      ukuran: 'S',
-      namaBarang: 'Baju',
-      jumlahBarang: 10,
-      masukKeluar: 'Masuk',
-      pic: 'John Doe',
-    },
-    {
-      id: 2,
-      tanggal: '2023-05-02',
-      ukuran: 'M',
-      namaBarang: 'Celana',
-      jumlahBarang: 7,
-      masukKeluar: 'Keluar',
-      pic: 'Jane Smith',
-    },
-    {
-      id: 3,
-      tanggal: '2023-05-03',
-      ukuran: 'L',
-      namaBarang: 'Sepatu',
-      jumlahBarang: 4,
-      masukKeluar: 'Masuk',
-      pic: 'Mike Johnson',
-    },
-  ];
+interface Transaksi {
+  id: number;
+  tanggal: string;
+  ukuran: string;
+  namaBarang: string;
+  jumlahBarang: number;
+  masukKeluar: string;
+  pic: string;
+}
+
+const Tabletransaksi: React.FC = () => {
+  const [transaksi, setTransaksi] = useState<Transaksi[]>([]);
+
+  useEffect(() => {
+    fetch('https://example.com/api/transaksi')
+      .then(response => response.json())
+      .then(data => setTransaksi(data))
+      .catch(error => console.log(error));
+  }, []);
 
   return (
     <DashboardCard title="Data Transaksi">

@@ -8,10 +8,11 @@ import Profile from '../../src/components/profile/Profile';
 const SamplePage = () => {
   return (
     <PageContainer title="Sample Page" description="this is Sample page">
-      <DashboardCard title="Sample Page">
+      
         <Typography>This is a sample page</Typography>
+        <> </>
         <Profile />
-      </DashboardCard>
+      
     </PageContainer>
   );
 };
