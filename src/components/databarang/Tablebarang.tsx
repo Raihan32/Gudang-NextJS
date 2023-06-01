@@ -13,15 +13,9 @@ import {
 } from "@mui/material";
 import DashboardCard from "../shared/DashboardCard";
 
-interface Size {
-  size: string;
-  stock: number;
-}
-
 interface Barang {
   id: number;
   name: string;
-  sizes: Size[];
 }
 
 const Tabelbarang: React.FC = () => {
@@ -29,7 +23,6 @@ const Tabelbarang: React.FC = () => {
   const [newBarang, setNewBarang] = useState<Barang>({
     id: 0,
     name: "",
-    sizes: [],
   });
   const [openModal, setOpenModal] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
@@ -39,24 +32,29 @@ const Tabelbarang: React.FC = () => {
 
   useEffect(() => {
     fetchBarangData();
-  }, []);
+  }, []);  
 
   const fetchBarangData = async () => {
     try {
-      const response = await axios.get("your_api_url");
+      const response = await axios.get("http://localhost:8001/barang");
       const data = response.data;
-      setBarangList(data.barang);
+  
+      if (data.data) {
+        setBarangList(data.data);
+      } else {
+        setBarangList([]); // or setBarangList(defaultBarangList) if you have a default value defined
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   const handleTambahDataBarang = async () => {
-    if (newBarang.name && newBarang.sizes.length > 0) {
+    if (newBarang.name) {
       try {
         if (editIndex !== -1) {
           const response = await axios.put(
-            `your_api_url/${newBarang.id}`,
+            `http://localhost:8000/barang/${newBarang.id}`,
             newBarang
           );
           const updatedBarangList = [...barangList];
@@ -64,18 +62,18 @@ const Tabelbarang: React.FC = () => {
           setBarangList(updatedBarangList);
           setEditIndex(-1);
         } else {
-          const response = await axios.post("your_api_url", newBarang);
+          const response = await axios.post("http://localhost:8000/barang", newBarang);
           const updatedBarangList = [...barangList, response.data];
           setBarangList(updatedBarangList);
         }
 
-        setNewBarang({ id: 0, name: "", sizes: [] });
+        setNewBarang({ id: 0, name: "" });
         setOpenModal(false);
       } catch (error) {
         console.error("Error adding/editing data:", error);
       }
     } else {
-      alert("Harap isi nama barang dan setidaknya satu ukuran dan stok.");
+      alert("Harap isi nama barang.");
     }
   };
 
@@ -88,7 +86,7 @@ const Tabelbarang: React.FC = () => {
 
   const handleDeleteBarang = async () => {
     try {
-      await axios.delete(`your_api_url/${barangList[deleteIndex].id}`);
+      await axios.delete(`http://localhost:8000/barang/${barangList[deleteIndex].id}`);
       const updatedBarangList = [...barangList];
       updatedBarangList.splice(deleteIndex, 1);
       setBarangList(updatedBarangList);
@@ -107,14 +105,6 @@ const Tabelbarang: React.FC = () => {
     setDeleteIndex(-1);
     setOpenDeleteDialog(false);
   };
-
-  function handleSizeChange(index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function handleStockChange(index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <DashboardCard title="Data Barang">
@@ -135,46 +125,24 @@ const Tabelbarang: React.FC = () => {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>Nama Barang</TableCell>
-            <TableCell>Ukuran</TableCell>
-            <TableCell>Stok</TableCell>
             <TableCell>Aksi</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {barangList
-            .filter((barang) =>
-              barang.name.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-            .map((barang, index) => (
-              <TableRow key={barang.id}>
-                <TableCell>{barang.id}</TableCell>
-                <TableCell>{barang.name}</TableCell>
-                <TableCell>
-                  {barang.sizes.map((size, sizeIndex) => (
-                    <div key={sizeIndex}>
-                      {size.size} - {size.stock}
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    onClick={() => handleEditBarang(index)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    size="small"
-                    onClick={() => handleOpenDeleteDialog(index)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
+  {barangList
+    .filter((data) =>
+      data.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .map((data, index) => (
+      <TableRow key={data.id}>
+        <TableCell>{data.id}</TableCell>
+        <TableCell>{data.name}</TableCell>
+        <TableCell>
+          {/* Action buttons */}
+        </TableCell>
+      </TableRow>
+    ))}
+</TableBody>
       </Table>
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <Box
@@ -205,27 +173,6 @@ const Tabelbarang: React.FC = () => {
               }))
             }
           />
-          {newBarang.sizes.map((size, index) => (
-            <div key={index}>
-              <TextField
-                label="Ukuran"
-                variant="outlined"
-                size="small"
-                margin="normal"
-                value={size.size}
-                onChange={(e) => handleSizeChange(index, e)}
-              />
-              <TextField
-                label="Stok"
-                variant="outlined"
-                size="small"
-                margin="normal"
-                type="number"
-                value={size.stock}
-                onChange={(e) => handleStockChange(index, e)}
-              />
-            </div>
-          ))}
           <Button
             variant="contained"
             onClick={handleTambahDataBarang}

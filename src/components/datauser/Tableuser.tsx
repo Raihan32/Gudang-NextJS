@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IconButton, Button, Modal, Box, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -12,89 +12,104 @@ import {
   TableRow,
 } from "@mui/material";
 import DashboardCard from "../shared/DashboardCard";
-import data from "../../../public/data/user.json";
+import axios from "axios";
 
 interface User {
-  nrp: string;
-  name: string;
+  id: number;
+  username: string;
   password: string;
   role: string;
 }
 
 const Tabletuser: React.FC = () => {
-  const [userList, setUserList] = useState<User[]>(data.user);
+  const [userList, setUserList] = useState<User[]>([]);
+  const [filteredUserList, setFilteredUserList] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [openModal, setOpenModal] = useState(false);
   const [newUser, setNewUser] = useState<User>({
-    nrp: "",
-    name: "",
+    id: 0,
+    username: "",
     password: "",
     role: "",
   });
-  const [openModal, setOpenModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const simpanDataPengguna = (updatedUserList: User[]) => {
-    const newData = { ...data, user: updatedUserList };
-    const newDataJson = JSON.stringify(newData);
-    // Simpan data pengguna ke file JSON menggunakan metode yang sesuai di sini (seperti fetch API atau metode penyimpanan file pada server)
-    console.log(newDataJson);
-  };
+  useEffect(() => {
+    fetchUserList();
+  }, []);
 
-  const handleTambahDataUser = () => {
-    if (newUser.nrp && newUser.name && newUser.password) {
-      const existingUser = userList.find((user) => user.nrp === newUser.nrp);
-
-      if (existingUser) {
-        const updatedUserList = userList.map((user) =>
-          user.nrp === existingUser.nrp ? newUser : user
-        );
-        setUserList(updatedUserList);
-        simpanDataPengguna(updatedUserList); // Simpan data pengguna ke file JSON
-      } else {
-        const updatedUserList = [...userList, newUser];
-        setUserList(updatedUserList);
-        simpanDataPengguna(updatedUserList); // Simpan data pengguna ke file JSON
-      }
-
-      setNewUser({ nrp: "", name: "", password: "", role: "",});
-      setOpenModal(false);
-    } else {
-      alert("Harap isi NRP, Nama, dan Password.");
+  const fetchUserList = async () => {
+    try {
+      const response = await axios.get<User[]>(
+        "http://localhost:3001/users" // Ganti dengan URL endpoint API yang sesuai
+      );
+      setUserList(response.data);
+      setFilteredUserList(response.data);
+    } catch (error) {
+      console.error("Error fetching user list:", error);
     }
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setNewUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
-  };
-
-  const handleEditUser = (nrp: string) => {
-    const userToEdit = userList.find((user) => user.nrp === nrp);
-    if (userToEdit) {
-      setNewUser(userToEdit);
-      setOpenModal(true);
-    }
-  };
-
-  const handleDeleteUser = (nrp: string) => {
-    const updatedUserList = userList.filter((user) => user.nrp !== nrp);
-    setUserList(updatedUserList);
-    simpanDataPengguna(updatedUserList); // Simpan data pengguna ke file JSON
+  const searchUser = (term: string) => {
+    const filteredList = userList.filter((user) =>
+      user.username.toLowerCase().includes(term.toLowerCase())
+    );
+    setFilteredUserList(filteredList);
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    searchUser(event.target.value);
   };
 
-  const filteredUserList = userList.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleEditUser = (id: number) => {
+    const user = userList.find((user) => user.id === id);
+    if (user) {
+      setNewUser(user);
+      setOpenModal(true);
+    }
+  };
+
+  const handleDeleteUser = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:3001/users/${id}`); // Ganti dengan URL endpoint API yang sesuai
+      fetchUserList();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setNewUser((prevUser) => ({
+      ...prevUser,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleTambahDataUser = async () => {
+    try {
+      if (newUser.id) {
+        await axios.put(
+          `http://localhost:3001/users/${newUser.id}`, // Ganti dengan URL endpoint API yang sesuai
+          newUser
+        );
+      } else {
+        await axios.post(
+          "http://localhost:3001/users", // Ganti dengan URL endpoint API yang sesuai
+          newUser
+        );
+      }
+      fetchUserList();
+      setOpenModal(false);
+      setNewUser({ id: 0, username: "", password: "", role: "" });
+    } catch (error) {
+      console.error("Error saving user:", error);
+    }
+  };
 
   const renderPassword = (password: string) => {
-    const passwordLength = password.length;
-    return "*".repeat(passwordLength);
+    // Logika untuk merender password
   };
 
   return (
@@ -128,12 +143,7 @@ const Tabletuser: React.FC = () => {
             <TableRow>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  NRP
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Nama
+                  Username
                 </Typography>
               </TableCell>
               <TableCell>
@@ -155,7 +165,7 @@ const Tabletuser: React.FC = () => {
           </TableHead>
           <TableBody>
             {filteredUserList.map((user) => (
-              <TableRow key={user.nrp}>
+              <TableRow key={user.id}>
                 <TableCell>
                   <Typography
                     sx={{
@@ -165,22 +175,8 @@ const Tabletuser: React.FC = () => {
                       alignItems: "center",
                     }}
                   >
-                    {user.nrp}
+                    {user.username}
                   </Typography>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        {user.name}
-                      </Typography>
-                    </Box>
-                  </Box>
                 </TableCell>
                 <TableCell>
                   <Typography
@@ -212,14 +208,14 @@ const Tabletuser: React.FC = () => {
                   <IconButton
                     color="primary"
                     size="small"
-                    onClick={() => handleEditUser(user.nrp)}
+                    onClick={() => handleEditUser(user.id)}
                   >
                     <EditIcon />
                   </IconButton>
                   <IconButton
                     color="secondary"
                     size="small"
-                    onClick={() => handleDeleteUser(user.nrp)}
+                    onClick={() => handleDeleteUser(user.id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -228,7 +224,6 @@ const Tabletuser: React.FC = () => {
             ))}
           </TableBody>
         </Table>
-
         {/* Modal */}
         <Modal open={openModal} onClose={() => setOpenModal(false)}>
           <Box
@@ -240,7 +235,7 @@ const Tabletuser: React.FC = () => {
               bgcolor: "background.paper",
               boxShadow: 24,
               p: 4,
-              width: 400, // Adjust the width as desired
+              width: 400, // Sesuaikan lebar sesuai kebutuhan
             }}
           >
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
@@ -249,18 +244,9 @@ const Tabletuser: React.FC = () => {
             <form>
               <Box sx={{ marginBottom: 2 }}>
                 <TextField
-                  label="NRP"
-                  name="nrp"
-                  value={newUser.nrp}
-                  onChange={handleInputChange}
-                  fullWidth
-                />
-              </Box>
-              <Box sx={{ marginBottom: 2 }}>
-                <TextField
-                  label="Nama"
-                  name="name"
-                  value={newUser.name}
+                  label="Username"
+                  name="username"
+                  value={newUser.username}
                   onChange={handleInputChange}
                   fullWidth
                 />

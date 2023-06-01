@@ -4,35 +4,32 @@ import { useRouter } from "next/router";
 import {
   Box,
   Typography,
-  FormGroup,
-  FormControlLabel,
   Button,
   Stack,
-  Checkbox,
 } from "@mui/material";
 import Link from "next/link";
 
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 
-interface loginType {
+interface LoginProps {
   title?: string;
   subtitle?: JSX.Element | JSX.Element[];
   subtext?: JSX.Element | JSX.Element[];
 }
 
-const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
+const AuthLogin: React.FC<LoginProps> = ({ title, subtitle, subtext }) => {
   const router = useRouter();
   const [nrp, setNrp] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("your-login-endpoint", {
+      const response = await axios.post("http://localhost:8000/auth/login", {
         nrp,
         password,
       });
       localStorage.setItem("token", response.data.token);
-      
+
       // Setelah berhasil login, navigasi ke halaman dashboard
       router.push("/");
     } catch (error) {
@@ -43,11 +40,11 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
 
   return (
     <>
-      {title ? (
+      {title && (
         <Typography fontWeight="700" variant="h2" mb={1}>
           {title}
         </Typography>
-      ) : null}
+      )}
 
       {subtext}
 
@@ -57,10 +54,10 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             variant="subtitle1"
             fontWeight={600}
             component="label"
-            htmlFor="nrp"
+            htmlFor="username"
             mb="5px"
           >
-            nrp
+            NRP
           </Typography>
           <CustomTextField
             variant="outlined"
@@ -87,14 +84,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setPassword(e.target.value)}
           />
         </Box>
-        <Stack
-          justifyContent="space-between"
-          direction="row"
-          alignItems="center"
-          my={2}
-        >
-          {/* Tambahkan komponen Checkbox atau opsi lainnya */}
-        </Stack>
       </Stack>
       <Box>
         <Button

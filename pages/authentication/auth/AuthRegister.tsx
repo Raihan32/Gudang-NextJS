@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button, Select, MenuItem } from '@mui/material';
-import Link from 'next/link';
 import axios from 'axios';
 
 import CustomTextField from '../../../src/components/forms/theme-elements/CustomTextField';
@@ -12,15 +11,17 @@ interface RegisterType {
   subtext?: JSX.Element | JSX.Element[];
 }
 
-const AuthRegister = ({ title, subtitle, subtext }: RegisterType) => {
+const AuthRegister: React.FC<RegisterType> = ({ title, subtitle, subtext }) => {
   const [nrp, setNrp] = useState('');
+  const [nama, setNama] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post('/api/register', {
+      const response = await axios.post('http://localhost:8000/auth/register', {
         nrp,
+        nama,
         password,
         role,
       });
@@ -49,17 +50,35 @@ const AuthRegister = ({ title, subtitle, subtext }: RegisterType) => {
             variant="subtitle1"
             fontWeight={600}
             component="label"
-            htmlFor="name"
+            htmlFor="nrp"
             mb="5px"
           >
             NRP
           </Typography>
           <CustomTextField
-            id="name"
+            id="nrp"
             variant="outlined"
             fullWidth
             value={nrp}
             onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setNrp(e.target.value)}
+          />
+
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            component="label"
+            htmlFor="nama"
+            mb="5px"
+            mt="25px"
+          >
+            Nama
+          </Typography>
+          <CustomTextField
+            id="nama"
+            variant="outlined"
+            fullWidth
+            value={nama}
+            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setNama(e.target.value)}
           />
 
           <Typography
@@ -95,7 +114,7 @@ const AuthRegister = ({ title, subtitle, subtext }: RegisterType) => {
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) => setRole(e.target.value as string)}
           >
             <MenuItem value="staff">Staff</MenuItem>
             <MenuItem value="admin">Admin</MenuItem>
