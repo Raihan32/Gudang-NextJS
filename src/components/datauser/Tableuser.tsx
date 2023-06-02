@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { IconButton, Button, Modal, Box, TextField } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SearchIcon from "@mui/icons-material/Search";
 import {
+  IconButton,
+  Button,
+  Modal,
+  Box,
+  TextField,
   Typography,
   Table,
   TableBody,
@@ -11,12 +12,14 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import DashboardCard from "../shared/DashboardCard";
 import axios from "axios";
 
 interface User {
-  id: number;
-  username: string;
+  nama: string;
+  nrp: string;
   password: string;
   role: string;
 }
@@ -25,10 +28,11 @@ const Tabletuser: React.FC = () => {
   const [userList, setUserList] = useState<User[]>([]);
   const [filteredUserList, setFilteredUserList] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [openModal, setOpenModal] = useState(false);
-  const [newUser, setNewUser] = useState<User>({
-    id: 0,
-    username: "",
+  const [openTambahModal, setOpenTambahModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User>({
+    nrp: "",
+    nama: "",
     password: "",
     role: "",
   });
@@ -40,7 +44,7 @@ const Tabletuser: React.FC = () => {
   const fetchUserList = async () => {
     try {
       const response = await axios.get<User[]>(
-        "http://localhost:3001/users" // Ganti dengan URL endpoint API yang sesuai
+        "http://localhost:8000/user" // Ganti dengan URL endpoint API yang sesuai
       );
       setUserList(response.data);
       setFilteredUserList(response.data);
@@ -51,7 +55,7 @@ const Tabletuser: React.FC = () => {
 
   const searchUser = (term: string) => {
     const filteredList = userList.filter((user) =>
-      user.username.toLowerCase().includes(term.toLowerCase())
+      user.nama.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredUserList(filteredList);
   };
@@ -61,27 +65,25 @@ const Tabletuser: React.FC = () => {
     searchUser(event.target.value);
   };
 
-  const handleEditUser = (id: number) => {
-    const user = userList.find((user) => user.id === id);
+  const handleEditUser = (nrp: string) => {
+    const user = userList.find((user) => user.nrp === nrp);
     if (user) {
-      setNewUser(user);
-      setOpenModal(true);
+      setSelectedUser(user);
+      setOpenEditModal(true);
     }
   };
 
-  const handleDeleteUser = async (id: number) => {
+  const handleDeleteUser = async (nrp: string) => {
     try {
-      await axios.delete(`http://localhost:3001/users/${id}`); // Ganti dengan URL endpoint API yang sesuai
+      await axios.delete(`http://localhost:8000/user/hapus/${nrp}`); // Ganti dengan URL endpoint API yang sesuai
       fetchUserList();
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setNewUser((prevUser) => ({
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedUser((prevUser) => ({
       ...prevUser,
       [event.target.name]: event.target.value,
     }));
@@ -89,27 +91,30 @@ const Tabletuser: React.FC = () => {
 
   const handleTambahDataUser = async () => {
     try {
-      if (newUser.id) {
-        await axios.put(
-          `http://localhost:3001/users/${newUser.id}`, // Ganti dengan URL endpoint API yang sesuai
-          newUser
-        );
-      } else {
-        await axios.post(
-          "http://localhost:3001/users", // Ganti dengan URL endpoint API yang sesuai
-          newUser
-        );
-      }
+      await axios.post(
+        `http://localhost:8000/auth/register`, // Update URL endpoint for adding new user
+        selectedUser
+      );
       fetchUserList();
-      setOpenModal(false);
-      setNewUser({ id: 0, username: "", password: "", role: "" });
+      setOpenTambahModal(false);
+      setSelectedUser({ nrp: "", nama: "", password: "", role: "" });
     } catch (error) {
       console.error("Error saving user:", error);
     }
   };
 
-  const renderPassword = (password: string) => {
-    // Logika untuk merender password
+  const handleEditDataUser = async () => {
+    try {
+      await axios.put(
+        `http://localhost:8000/user/edit/${selectedUser.nrp}`, // Update URL endpoint for editing user
+        selectedUser
+      );
+      fetchUserList();
+      setOpenEditModal(false);
+      setSelectedUser({ nrp: "", nama: "", password: "", role: "" });
+    } catch (error) {
+      console.error("Error saving user:", error);
+    }
   };
 
   return (
@@ -127,7 +132,7 @@ const Tabletuser: React.FC = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => setOpenModal(true)}
+            onClick={() => setOpenTambahModal(true)}
           >
             Tambah User
           </Button>
@@ -143,12 +148,12 @@ const Tabletuser: React.FC = () => {
             <TableRow>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Username
+                  NRP
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Password
+                  Nama
                 </Typography>
               </TableCell>
               <TableCell>
@@ -165,7 +170,7 @@ const Tabletuser: React.FC = () => {
           </TableHead>
           <TableBody>
             {filteredUserList.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.nrp}>
                 <TableCell>
                   <Typography
                     sx={{
@@ -175,7 +180,7 @@ const Tabletuser: React.FC = () => {
                       alignItems: "center",
                     }}
                   >
-                    {user.username}
+                    {user.nrp}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -187,7 +192,7 @@ const Tabletuser: React.FC = () => {
                       alignItems: "center",
                     }}
                   >
-                    {renderPassword(user.password)}
+                    {user.nama}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -208,14 +213,14 @@ const Tabletuser: React.FC = () => {
                   <IconButton
                     color="primary"
                     size="small"
-                    onClick={() => handleEditUser(user.id)}
+                    onClick={() => handleEditUser(user.nrp)}
                   >
                     <EditIcon />
                   </IconButton>
                   <IconButton
                     color="secondary"
                     size="small"
-                    onClick={() => handleDeleteUser(user.id)}
+                    onClick={() => handleDeleteUser(user.nrp)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -224,8 +229,8 @@ const Tabletuser: React.FC = () => {
             ))}
           </TableBody>
         </Table>
-        {/* Modal */}
-        <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        {/* Tambah User Modal */}
+        <Modal open={openTambahModal} onClose={() => setOpenTambahModal(false)}>
           <Box
             sx={{
               position: "absolute",
@@ -239,14 +244,23 @@ const Tabletuser: React.FC = () => {
             }}
           >
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
-              Tambah/Edit User
+              Tambah User
             </Typography>
             <form>
               <Box sx={{ marginBottom: 2 }}>
                 <TextField
-                  label="Username"
-                  name="username"
-                  value={newUser.username}
+                  label="nrp"
+                  name="nrp"
+                  value={selectedUser.nrp}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Box>
+              <Box sx={{ marginBottom: 2 }}>
+                <TextField
+                  label="nama"
+                  name="nama"
+                  value={selectedUser.nama}
                   onChange={handleInputChange}
                   fullWidth
                 />
@@ -255,7 +269,7 @@ const Tabletuser: React.FC = () => {
                 <TextField
                   label="Password"
                   name="password"
-                  value={newUser.password}
+                  value={selectedUser.password}
                   onChange={handleInputChange}
                   fullWidth
                 />
@@ -264,7 +278,7 @@ const Tabletuser: React.FC = () => {
                 <TextField
                   label="Role"
                   name="role"
-                  value={newUser.role}
+                  value={selectedUser.role}
                   onChange={handleInputChange}
                   fullWidth
                 />
@@ -275,6 +289,98 @@ const Tabletuser: React.FC = () => {
                 onClick={handleTambahDataUser}
               >
                 Simpan
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setOpenTambahModal(false);
+                  setSelectedUser({
+                    nrp: "",
+                    nama: "",
+                    password: "",
+                    role: "",
+                  });
+                }}
+              >
+                Batal
+              </Button>
+            </form>
+          </Box>
+        </Modal>
+        {/* Edit User Modal */}
+        <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+              width: 400, // Sesuaikan lebar sesuai kebutuhan
+            }}
+          >
+            <Typography variant="h6" sx={{ marginBottom: 2 }}>
+              Edit User
+            </Typography>
+            <form>
+              <Box sx={{ marginBottom: 2 }}>
+                <TextField
+                  label="nrp"
+                  name="nrp"
+                  value={selectedUser.nrp}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Box>
+              <Box sx={{ marginBottom: 2 }}>
+                <TextField
+                  label="nama"
+                  name="nama"
+                  value={selectedUser.nama}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Box>
+              <Box sx={{ marginBottom: 2 }}>
+                <TextField
+                  label="Password"
+                  name="password"
+                  value={selectedUser.password}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Box>
+              <Box sx={{ marginBottom: 2 }}>
+                <TextField
+                  label="Role"
+                  name="role"
+                  value={selectedUser.role}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Box>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleTambahDataUser}
+              >
+                Simpan
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setOpenEditModal(false);
+                  setSelectedUser({
+                    nrp: "",
+                    nama: "",
+                    password: "",
+                    role: "",
+                  });
+                }}
+              >
+                Batal
               </Button>
             </form>
           </Box>

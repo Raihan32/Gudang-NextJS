@@ -57,11 +57,6 @@ const Tabletransaksi: React.FC = () => {
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Ukuran
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
                   Nama Barang
                 </Typography>
               </TableCell>
@@ -107,20 +102,6 @@ const Tabletransaksi: React.FC = () => {
                     <Box>
                       <Typography variant="subtitle2" fontWeight={600}>
                         {transaksi.jumlahBarang}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        {transaksi.ukuran}
                       </Typography>
                     </Box>
                   </Box>

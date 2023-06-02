@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { IconButton, Button, Modal, Box, TextField, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from "@mui/material";
+import {
+  IconButton,
+  Button,
+  Modal,
+  Box,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -14,15 +25,17 @@ import {
 import DashboardCard from "../shared/DashboardCard";
 
 interface Barang {
-  id: number;
-  name: string;
+  nama_barang: string;
+  idbarang: number;
+  stock: number;
 }
 
 const Tabelbarang: React.FC = () => {
   const [barangList, setBarangList] = useState<Barang[]>([]);
   const [newBarang, setNewBarang] = useState<Barang>({
-    id: 0,
-    name: "",
+    idbarang: 0,
+    nama_barang: "",
+    stock: 0,
   });
   const [openModal, setOpenModal] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
@@ -32,17 +45,17 @@ const Tabelbarang: React.FC = () => {
 
   useEffect(() => {
     fetchBarangData();
-  }, []);  
+  }, []);
 
   const fetchBarangData = async () => {
     try {
-      const response = await axios.get("http://localhost:8001/barang");
+      const response = await axios.get("http://localhost:8000/barang");
       const data = response.data;
   
-      if (data.data) {
-        setBarangList(data.data);
+      if (data) {
+        setBarangList(data); // Update this line
       } else {
-        setBarangList([]); // or setBarangList(defaultBarangList) if you have a default value defined
+        setBarangList([]);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -50,11 +63,11 @@ const Tabelbarang: React.FC = () => {
   };
 
   const handleTambahDataBarang = async () => {
-    if (newBarang.name) {
+    if (newBarang.nama_barang && newBarang.stock >= 0) {
       try {
         if (editIndex !== -1) {
           const response = await axios.put(
-            `http://localhost:8000/barang/${newBarang.id}`,
+            `http://localhost:8000/barang/edit/${newBarang.idbarang}`,
             newBarang
           );
           const updatedBarangList = [...barangList];
@@ -62,18 +75,21 @@ const Tabelbarang: React.FC = () => {
           setBarangList(updatedBarangList);
           setEditIndex(-1);
         } else {
-          const response = await axios.post("http://localhost:8000/barang", newBarang);
+          const response = await axios.post(
+            "http://localhost:8000/barang/tambah",
+            newBarang
+          );
           const updatedBarangList = [...barangList, response.data];
           setBarangList(updatedBarangList);
         }
 
-        setNewBarang({ id: 0, name: "" });
+        setNewBarang({ idbarang: 0,nama_barang: "", stock: 0 });
         setOpenModal(false);
       } catch (error) {
         console.error("Error adding/editing data:", error);
       }
     } else {
-      alert("Harap isi nama barang.");
+      alert("Harap isi nama barang dan stok (tidak boleh negatif).");
     }
   };
 
@@ -86,7 +102,9 @@ const Tabelbarang: React.FC = () => {
 
   const handleDeleteBarang = async () => {
     try {
-      await axios.delete(`http://localhost:8000/barang/${barangList[deleteIndex].id}`);
+      await axios.delete(
+        `http://localhost:8000/barang/hapus/${barangList[deleteIndex].idbarang}`
+      );
       const updatedBarangList = [...barangList];
       updatedBarangList.splice(deleteIndex, 1);
       setBarangList(updatedBarangList);
@@ -125,24 +143,33 @@ const Tabelbarang: React.FC = () => {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>Nama Barang</TableCell>
+            <TableCell>Stock</TableCell>
             <TableCell>Aksi</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-  {barangList
-    .filter((data) =>
-      data.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .map((data, index) => (
-      <TableRow key={data.id}>
-        <TableCell>{data.id}</TableCell>
-        <TableCell>{data.name}</TableCell>
-        <TableCell>
-          {/* Action buttons */}
-        </TableCell>
-      </TableRow>
-    ))}
-</TableBody>
+          {barangList.map((barang, index) => (
+              <TableRow key={barang.idbarang}>
+                <TableCell>{barang.idbarang}</TableCell>
+                <TableCell>{barang.nama_barang}</TableCell>
+                <TableCell>{barang.stock}</TableCell>
+                <TableCell>
+                  <IconButton
+                    color="primary"
+                    onClick={() => handleEditBarang(index)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color="secondary"
+                    onClick={() => handleOpenDeleteDialog(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
       </Table>
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <Box
@@ -165,11 +192,25 @@ const Tabelbarang: React.FC = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            value={newBarang.name}
+            value={newBarang.nama_barang}
             onChange={(e) =>
               setNewBarang((prevBarang) => ({
                 ...prevBarang,
-                name: e.target.value,
+                nama_barang: e.target.value,
+              }))
+            }
+          />
+          <TextField
+            label="Stock"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            type="number"
+            value={newBarang.stock}
+            onChange={(e) =>
+              setNewBarang((prevBarang) => ({
+                ...prevBarang,
+                stock: parseInt(e.target.value),
               }))
             }
           />
