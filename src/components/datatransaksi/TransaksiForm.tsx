@@ -1,54 +1,71 @@
-import React, { useState } from 'react';
-import { TextField, Button, FormControl, Select, MenuItem, InputLabel, Box } from '@mui/material';
-import axios from 'axios';
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+  Box,
+} from "@mui/material";
+import axios from "axios";
 
 interface TransaksiFormProps {
   addDataBarang: (dataTransaksi: DataTransaksi) => void;
 }
 
 interface DataTransaksi {
-  tanggal: string;
+  id: number;
+  tanggal: Date;
   jumlah: string;
-  ukuran: string;
   namaBarang: string;
-  jenisTransaksi: string;
+  jenis: string;
+  nrp: string;
+  deskripsi: string;
 }
 
 const TransaksiForm: React.FC<TransaksiFormProps> = ({ addDataBarang }) => {
-  const [tanggal, setTanggal] = useState('');
-  const [jumlah, setJumlah] = useState('');
-  const [ukuran, setUkuran] = useState('');
-  const [namaBarang, setNamaBarang] = useState('');
-  const [jenisTransaksi, setJenisTransaksi] = useState('');
+  const [tanggal, setTanggal] = useState<Date>(new Date());
+  const [jumlahBarang, setJumlahBarang] = useState("");
+  const [namaBarang, setNamaBarang] = useState("");
+  const [jenis, setJenisTransaksi] = useState("");
+  const [nrp, setNRP] = useState("");
+  const [deskripsi, setDeskripsi] = useState("");
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Membuat objek data transaksi
     const dataTransaksi: DataTransaksi = {
-      tanggal,
-      jumlah,
-      ukuran,
+      tanggal: new Date(tanggal),
+      jumlah: jumlahBarang,
       namaBarang,
-      jenisTransaksi,
+      jenis,
+      nrp,
+      deskripsi,
+      id: 0,
     };
 
     try {
       // Mengirim data transaksi ke API menggunakan Axios
-      const response = await axios.post('/api/transaksi', dataTransaksi);
-      console.log('Transaction submitted successfully!', response.data);
+      const response = await axios.post(
+        "http://localhost:8000/transaksi/tambah",
+        dataTransaksi
+      );
+      console.log("Transaction submitted successfully!", response.data);
 
       // Memanggil fungsi addDataBarang untuk menambahkan data transaksi ke tabel barang
       addDataBarang(dataTransaksi);
 
       // Mereset form setelah submit
-      setTanggal('');
-      setJumlah('');
-      setUkuran('');
-      setNamaBarang('');
-      setJenisTransaksi('');
+      setTanggal(new Date()); // Reset to initial value
+      setJumlahBarang("");
+      setNamaBarang("");
+      setJenisTransaksi("");
+      setNRP("");
+      setDeskripsi("");
     } catch (error) {
-      console.error('Failed to submit transaction!', error);
+      console.error("Failed to submit transaction!", error);
     }
   };
 
@@ -58,25 +75,17 @@ const TransaksiForm: React.FC<TransaksiFormProps> = ({ addDataBarang }) => {
         <TextField
           sx={{ marginTop: 2 }}
           type="date"
-          value={tanggal}
-          onChange={(e) => setTanggal(e.target.value)}
+          value={tanggal.toISOString().split("T")[0]}
+          onChange={(e) => setTanggal(new Date(e.target.value))}
           fullWidth
           required
         />
         <TextField
           sx={{ marginTop: 2 }}
-          label="Jumlah"
+          label="Jumlah Barang"
           type="number"
           value={jumlah}
-          onChange={(e) => setJumlah(e.target.value)}
-          fullWidth
-          required
-        />
-        <TextField
-          sx={{ marginTop: 2 }}
-          label="Ukuran"
-          value={ukuran}
-          onChange={(e) => setUkuran(e.target.value)}
+          onChange={(e) => setJumlahBarang(e.target.value)}
           fullWidth
           required
         />
@@ -88,17 +97,39 @@ const TransaksiForm: React.FC<TransaksiFormProps> = ({ addDataBarang }) => {
           fullWidth
           required
         />
+        <TextField
+          sx={{ marginTop: 2 }}
+          label="PIC"
+          value={nrp}
+          onChange={(e) => setNRP(e.target.value)}
+          fullWidth
+          required
+        />
         <FormControl sx={{ marginTop: 2 }} fullWidth required>
           <InputLabel>Masuk / Keluar</InputLabel>
           <Select
-            value={jenisTransaksi}
+            value={jenis}
             onChange={(e) => setJenisTransaksi(e.target.value as string)}
           >
-            <MenuItem value="pemasukan">Pemasukan</MenuItem>
-            <MenuItem value="pengeluaran">Pengeluaran</MenuItem>
+            <MenuItem value="masuk">Pemasukan</MenuItem>
+            <MenuItem value="keluar">Pengeluaran</MenuItem>
           </Select>
         </FormControl>
-        <Button sx={{ marginTop: 2 }} type="submit" variant="contained" color="primary" fullWidth>
+        <TextField
+          sx={{ marginTop: 2 }}
+          label="Deskripsi"
+          value={deskripsi}
+          onChange={(e) => setDeskripsi(e.target.value)}
+          fullWidth
+          required
+        />
+        <Button
+          sx={{ marginTop: 2 }}
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+        >
           Submit
         </Button>
       </form>
